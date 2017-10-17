@@ -3,9 +3,10 @@
 
 #include "lib.h"
 #include <stdio.h>
+#include <string.h>
 class framereceiver {
 private:
-    char ACK;
+    char ack_c;
     int Seq_Num;
     char a_win_size;
     bool error;
@@ -15,10 +16,10 @@ public:
         this->Seq_Num = Seq_Num;
         this->error = false;
     }
-    framereceiver(int Seq_Num, char ACK, char a_win_size) {
+    framereceiver(int Seq_Num, char ack_c, char a_win_size) {
         this->Seq_Num = Seq_Num;
         this->error = false;
-        this->ACK = ACK;
+        this->ack_c = ack_c;
         this->a_win_size = a_win_size;
     }
     framereceiver(char * frame) {
@@ -27,7 +28,7 @@ public:
         this->setACK(frame[0]);
 
         ///FRAME NUMBER
-        unsigned char * a[4];
+        unsigned char a[4];
         a[0]=frame[1];
         a[1]=frame[2];
         a[2]=frame[3];
@@ -44,21 +45,22 @@ public:
         }
     }
 
-    char getACK() { return this->ACK; }
-    void setACK(char newACK) { this->ACK = newACK; }
+    char getACK() { return this->ack_c; }
+    void setACK(char newACK) { this->ack_c = newACK; }
 
     int getSeq_Num() { return this->Seq_Num; }
     void setSeq_Num(int newNumber) { this->Seq_Num = newNumber; }
 
     char * toBytes() {
         char * o = new char[1 + 4 +1 + 1];
-        o[0] = this->ACK;
+        o[0] = this->ack_c;
         o[1] = (this->Seq_Num>>24) & 0xFF;
         o[2] = (this->Seq_Num>>16) & 0xFF;
         o[3] = (this->Seq_Num>>8) & 0xFF;
         o[4] = this->Seq_Num & 0xFF;
-        unsigned short c = calc_crc16(o, strlen(o));
-        sprintf(o, "%s%s", o, checksum(o,8));
+        unsigned short c = checksum(o, strlen(o));
+        sprintf(o, "%s%c", o, c);
+        printf("tes to bytes %s", o);
         return o;
     }
 

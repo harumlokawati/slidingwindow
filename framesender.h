@@ -23,7 +23,6 @@ public:
     }
 
     framesender(int Seq_Num) {
-        this->data = new char;
         this->Seq_Num = Seq_Num;
         this->error = false;
     }
@@ -31,18 +30,18 @@ public:
     framesender(char * frame) {
         this->error = false;
         ////SETTING FRAME NUMBER
-        unsigned char * a[4];
+        unsigned char a[4];
         a[0]=frame[1];
         a[1]=frame[2];
         a[2]=frame[3];
         a[3]=frame[4];
         this->setSeq_Num(*(int *)a);
         //// SETTING DATA AND LENGTH
-        this->data = frame=[5];
+        this->data = frame[6];
         if (!this->error) {
-            char checksum = frame[8];
+            char checksum = frame[7];
             char * framex = this->toBytes();
-            char trueChecksum = framex[8];  
+            char trueChecksum = framex[7];  
             if(checksum!=trueChecksum){
             	this->error = true;
             }
@@ -81,9 +80,10 @@ public:
 		o[3] = (this->Seq_Num>>8) & 0xFF;
 		o[4] = this->Seq_Num & 0xFF;
         o[5] = STX;
-        sprintf(o, "%s%s", o, this->data);
+        sprintf(o, "%s%c", o, this->data);
         sprintf(o, "%s%c", o, ETX);
-        sprintf(o, "%s%s", o, checksum(o,8));
+        sprintf(o, "%s%c", o, checksum(o,8));
+        //printf("tes to bytes %s", o);
         return o;
     }
 	int getBytesLength() { return 1 + 4 + 1 + 1 + 1 + 1; }
