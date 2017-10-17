@@ -4,6 +4,7 @@
 #include "lib.h"
 #include <stdio.h>
 #include <string.h>
+#include "checksum.h"
 class framereceiver {
 private:
     char ack_c;
@@ -60,7 +61,7 @@ public:
         o[4] = this->Seq_Num & 0xFF;
         unsigned short c = checksum(o, strlen(o));
         sprintf(o, "%s%c", o, c);
-        printf("tes to bytes %s", o);
+        //printf("tes to bytes %s", o);
         return o;
     }
 
