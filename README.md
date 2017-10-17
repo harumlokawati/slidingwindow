@@ -12,6 +12,33 @@ TUBES JARKOM 1
 Jawab: 
 Jika advertised window yang dikirim bernilai 0, maka data tidak bisa dikirim. Receiver akan menunggu sender untuk kembali mengirimkan data tersebut.
 
+titip referensi (dari buku peterson):
+An advertised window of 0 means that the sending side cannot
+transmit any data, even though data it has previously sent has been successfully ac-
+knowledged. Finally, not being able to transmit any data means that the send buffer
+fills up, which ultimately causes TCP to block the sending process. As soon as the
+receiving process starts to read data again, the receive-side TCP is able to open its win-
+dow back up, which allows the send-side TCP to transmit data out of its buffer. When
+this data is eventually acknowledged, LastByteAcked is incremented, the buffer space
+holding this acknowledged data becomes free, and the sending process is unblocked
+and allowed to proceed.
+There is only one remaining detail that must be resolved—how does the sending
+side know that the advertised window is no longer 0? As mentioned above, TCP always
+sends a segment in response to a received data segment, and this response contains the
+latest values for the Acknowledge and AdvertisedWindow fields, even if these values
+have not changed since the last time they were sent. The problem is this. Once the
+receive side has advertised a window size of 0, the sender is not permitted to send
+any more data, which means it has no way to discover that the advertised window
+is no longer 0 at some time in the future. TCP on the receive side does not sponta-
+neously send nondata segments; it only sends them in response to an arriving data
+segment.
+TCP deals with this situation as follows. Whenever the other side advertises a
+window size of 0, the sending side persists in sending a segment with 1 byte of data
+every so often. It knows that this data will probably not be accepted, but it tries
+anyway, because each of these 1-byte segments triggers a response that contains the
+current advertised window. Eventually, one of these 1-byte probes triggers a response
+that reports a nonzero advertised window.
+
 
 2.	Sebutkan field data yang terdapat TCP Header serta ukurannya, ilustrasikan, dan jelaskan kegunaan dari masing-masing field data tersebut!
 Jawab:
