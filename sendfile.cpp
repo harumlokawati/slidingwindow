@@ -21,13 +21,17 @@ using namespace std;
 #define NIL -999
 #define DEFAULT_BUFF 10;
 #define DEFAULT_WIN 4;
+typedef struct {
+	int waktu;
+	int seqnum;
+} timeFrame;
 	struct sockaddr_in serverAddr;
 	struct sockaddr_storage serverStorage;
 	socklen_t addr_size;
 	char file[1000];
 	vector<framesender> Buffer;
 	framesender Window[100];
-	//timebuff* timeBuffer;
+	vector<timeFrame> timeBuffer;
 	int lengthFile = 0;
 	int indexFile= 0;
 	int Socket;
@@ -176,13 +180,28 @@ void receiveACK(){
 		}
 	}
 }
+
+void timeout() {
+	while (true) {
+		if (!timeBuffer.empty()) {
+			for (vector<timeFrame>::iterator it=timeBuffer.begin(); it>timeBuffer.end(); it++) {
+				int now = time(0);
+				if (((it->waktu - now)/double(CLOCKS_PER_SEC)*1000) > (ACK_TIMEOUT*1000)) {
+					sendFrame(Buffer[it->seqnum]);
+					timeBuffer.erase(it);
+				}
+			}
+		}
+	}
+}
+
 void SEND(){
 	thread thread1(receiveACK);
 	thread thread2(init);
-	//thread thread3(timeout);
+	thread thread3(timeout);
 	thread1.join();
 	thread2.join();
-	//thread3.join();
+	thread3.join();
 }
 int main(int argc, char* argv[]) {
 	printf("%d\n",argc);
