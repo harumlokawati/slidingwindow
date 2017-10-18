@@ -34,8 +34,8 @@ using namespace std;
 	int sizeBuffer = DEFAULT_BUFF;
 	int sizeWindow = DEFAULT_WIN;
 	int SWS, LAR, LFS = 0;
-	int countSentBuffer = 0;
-	int countPendingACK = 0;
+	int PendingACK = 0;
+	mutex mut;
 
 void configureSetting(char IP[], int portNum) {
 	  serverAddr.sin_family = AF_INET;
@@ -68,14 +68,6 @@ void sendtoBuffer(){
 		cout<<file[i]<<endl;
 	}
 }
-
-void SEND(){
-	sendtoBuffer();
-	
-	
-	
-}
-
 
 void delfirst(framesender A[],int length){
 	for(int i = 1; i<length; i++){
@@ -176,7 +168,7 @@ void receiveACK(){
 	}
 }
 void SEND(){
-	thread thread1(receiveACK,Socket);
+	thread thread1(receiveACK);
 	thread thread2(init);
 	//thread thread3(timeout);
 	thread1.join();
