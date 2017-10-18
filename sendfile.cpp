@@ -32,7 +32,7 @@ using namespace std;
 	int indexFile= 0;
 	int Socket;
 	int sizeBuffer = DEFAULT_BUFF;
-	int sizeWindoew = DEFAULT_WIN;
+	int sizeWindow = DEFAULT_WIN;
 	int SWS, LAR, LFS = 0;
 	int countSentBuffer = 0;
 	int countPendingACK = 0;
@@ -71,6 +71,9 @@ void sendtoBuffer(){
 
 void SEND(){
 	sendtoBuffer();
+	
+	
+	
 }
 
 
@@ -88,13 +91,16 @@ int main(int argc, char* argv[]) {
 	printf("%d\n",argc);
 	printf("%s%s%s%s%s%s\n",argv[0],argv[1],argv[2],argv[3],argv[4],argv[5]);
 	if (argc != 6) {
-    	cout << "Usage : ./sendfile <filename> <sindowsize> <buffersize> <destination_ip> <destination_port>" << endl;
+    	cout << "Usage : ./sendfile <filename> <windowsize> <buffersize> <destination_ip> <destination_port>" << endl;
   	} else {
 	    int port;
 	    char * filename;
 
 	    port = atoi(argv[5]);
 	    filename = argv[1];
+	    sizeWindow = atoi(argv[2]);
+	    sizeBuffer = atoi(argv[3]);
+	    printf("%d %d\n",sizeWindow, sizeBuffer);
 
 	    // Membuat UDP socket
 	    Socket = socket(PF_INET, SOCK_DGRAM, 0);
