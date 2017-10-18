@@ -94,15 +94,17 @@ void rcv (int socket) {
 	}
 	while(true) {
 	printf("halo\n");
-	framereceiver fr(message);
 	recvfrom(socket, message, 300,0,(struct sockaddr *)&serverStorage, &addr_size);
+	cout<< "bisa receive" <<endl;
+	framesender fs(message);
+	fs.printBytes();
 	//framereceiver fr('a');
-	if (!fr.isError()) {
+	if (!fs.isError()) {
 		//sendACK
-		sendACK(fr.getSeq_Num(), socket);
-		if(!checkTrue[fr.getSeq_Num()]){
+		sendACK(fs.getSeq_Num(), socket);
+		if(!checkTrue[fs.getSeq_Num()]){
 			//send back message data to buffer
-			checkTrue[fr.getSeq_Num()] = true;
+			checkTrue[fs.getSeq_Num()] = true;
 			bool check = true;
 			int i = 0;
 			while (check && i < sizeWindow+1) {
@@ -118,7 +120,7 @@ void rcv (int socket) {
 		}
 	} else {
 		//sendNAK
-		sendNAK(fr.getSeq_Num(), socket);
+		sendNAK(fs.getSeq_Num(), socket);
 	}
 }
 }
@@ -135,7 +137,7 @@ int main (int argc, char* argv[]) {
 		
 		configureSetting(port);
 		bind(socketn, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
-		rcv(socketn);
+		cout << "inisoket" << socketn << endl;
 		thread rcvmsg(rcv, std::ref(socketn));
 		thread writemsg(writeRcvd, std::ref(socketn), argv[1]);
 		rcvmsg.join();
