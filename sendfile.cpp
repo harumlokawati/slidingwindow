@@ -115,6 +115,8 @@ void sendFrame(framesender fs){
 	//temp.frameNum = frame.getFrameNumber();
 	//timeBuffer.push_back(temp);
 	printf("Message ke-%d: %c\n", fs.getSeq_Num(), fs.getData());
+	fs.print();
+	fs.printBytes();
 	sendto(Socket,msg,300,0,(struct sockaddr *)&serverAddr,addr_size);	
 }
 void init(){
@@ -123,6 +125,7 @@ void init(){
 	LAR = 0;
 	int idx_win = 0;
 	mut.lock();
+	printf("------------ini init bruh\n");
 	for (int i = 0; i < sizeWindow; i++) {
 		sendFrame(Buffer[0]);
 		Window[idx_win] = Buffer[0];
@@ -130,10 +133,12 @@ void init(){
 		Buffer.erase(Buffer.begin());
 	}
 	mut.unlock();
+	printf("------------init done\n");
 }
 
 
 void receiveACK(){
+	printf("recvACK start\n");
 	char * frame;
 	while(1){
 		recvfrom(Socket,frame,10,0,NULL,NULL);
