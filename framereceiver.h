@@ -30,10 +30,10 @@ public:
 
         ///FRAME NUMBER
         unsigned char a[4];
-        a[0]=frame[1];
-        a[1]=frame[2];
-        a[2]=frame[3];
-        a[3]=frame[4];
+        a[3]=frame[1];
+        a[2]=frame[2];
+        a[1]=frame[3];
+        a[0]=frame[4];
         this->setSeq_Num(*(int *)a);
         this->a_win_size = frame[5];
         if (!this->error) {
@@ -59,8 +59,8 @@ public:
         o[2] = (this->Seq_Num>>16) & 0xFF;
         o[3] = (this->Seq_Num>>8) & 0xFF;
         o[4] = this->Seq_Num & 0xFF;
-        unsigned short c = checksum(o, strlen(o));
-        sprintf(o, "%s%c", o, c);
+        o[5] = 'a';
+        o[6] = checksum(o, 7);
         //printf("tes to bytes %s", o);
         return o;
     }
@@ -69,7 +69,7 @@ public:
 
     void printBytes() {
         char * buffer = this->toBytes();
-        for(int j = 0; buffer[j] != 0; j++)
+        for(int j = 0; j < getBytesLength(); j++)
             printf("%02hhX ", buffer[j]);
     }
 

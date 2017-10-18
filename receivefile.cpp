@@ -53,17 +53,17 @@ void configureSetting (int port) {
 }
 
 void sendACK(int seqnum, int socket) {
-	char temp = char(seqnum);
-	framereceiver ackframe(temp);
+	framereceiver ackframe(seqnum);
+	cout << seqnum <<endl;
 	ackframe.setACK(ACK);
-	sendto(socket, ackframe.toBytes(), ackframe.getBytesLength(), 0,(struct sockaddr *)&serverStorage,addr_size);
+	ackframe.printBytes();
+	sendto(socket, ackframe.toBytes(), 10, 0,(struct sockaddr *)&serverStorage,addr_size);
 }
 
 void sendNAK(int seqnum, int socket) {
-	char temp = char(seqnum);
-	framereceiver ackframe(temp);
+	framereceiver ackframe(seqnum);
 	ackframe.setACK(NAK);
-	sendto(socket, ackframe.toBytes(), ackframe.getBytesLength(), 0,(struct sockaddr *)&serverStorage,addr_size);
+	sendto(socket, ackframe.toBytes(), 10, 0,(struct sockaddr *)&serverStorage,addr_size);
 }
 
 void writeRcvd(int socket, string filename) {
@@ -101,6 +101,7 @@ void rcv (int socket) {
 	//framereceiver fr('a');
 	if (!fs.isError()) {
 		//sendACK
+		cout << "send ack" << endl;
 		sendACK(fs.getSeq_Num(), socket);
 		if(!checkTrue[fs.getSeq_Num()]){
 			//send back message data to buffer

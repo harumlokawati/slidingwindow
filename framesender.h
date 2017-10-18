@@ -27,14 +27,14 @@ public:
         this->error = false;
     }
 
-    framesender(unsigned char * frame) {
+    framesender(char * frame) {
         this->error = false;
         ////SETTING FRAME NUMBER
         unsigned char a[4];
-        a[0]=frame[1];
-        a[1]=frame[2];
-        a[2]=frame[3];
-        a[3]=frame[4];
+        a[3]=frame[1];
+        a[2]=frame[2];
+        a[1]=frame[3];
+        a[0]=frame[4];
         this->setSeq_Num(*(int *) a);
         //// SETTING DATA AND LENGTH
         this->data = frame[6];

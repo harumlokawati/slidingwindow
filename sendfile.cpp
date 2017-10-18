@@ -139,10 +139,14 @@ void init(){
 
 void receiveACK(){
 	printf("recvACK start\n");
-	char * frame;
+	char frame[100];
 	while(1){
-		recvfrom(Socket,frame,10,0,NULL,NULL);
+		recvfrom(Socket,frame,10,0,(struct sockaddr *)&serverAddr, &addr_size);
+		
+		printf("recvACK start\n");
 		framereceiver recvmsg(frame);
+		recvmsg.printBytes();
+		printf("%d", recvmsg.getSeq_Num());
 		if(recvmsg.getACK()==ACK){
 			printf("ACK[%d]\n",recvmsg.getSeq_Num());
 			//jika ACK yang diterima untuk frame awal window
