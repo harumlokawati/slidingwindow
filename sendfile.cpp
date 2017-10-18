@@ -16,7 +16,7 @@
 #include <ctime>
 #include <mutex>
 #include <thread>
-
+#include <vector>
 using namespace std;
 #define NIL -999
 #define DEFAULT_BUFF 10;
@@ -25,8 +25,8 @@ using namespace std;
 	struct sockaddr_storage serverStorage;
 	socklen_t addr_size;
 	char file[1000];
-	framesender Buffer[100];
-	framesender* Window;
+	vector<framesender> Buffer;
+	framesender Window[100];
 	//timebuff* timeBuffer;
 	int lengthFile = 0;
 	int indexFile= 0;
@@ -63,7 +63,7 @@ void sendtoBuffer(){
 	for(int i=0; (i<sizeBuffer)&&(indexFile<lengthFile); i++){
 		framesender fs(i+1);
 		fs.setData(file[i]);
-		Buffer[0] = fs;
+		Buffer.push_back(fs);
 		indexFile++;
 		cout<<file[i]<<endl;
 	}
@@ -77,6 +77,44 @@ void SEND(){
 }
 
 
+void delfirst(framesender A[],int length){
+	for(int i = 1; i<length; i++){
+		A[i-1]=A[i];
+	}
+}
+void delbyseqnum(framesender A[], int length, int Seq_Num){
+	bool deleted=false;
+	int i = 0;
+	while((!deleted)&&(i<length)){
+		if (A[i].getSeq_Num() == Seq_Num){
+			deleted=true;
+			int j=i;
+			while(j<(length-1)){
+				A[j]=A[j+1];
+				j++;
+			}
+			A[j]=0;
+		}
+		i++;
+	}
+}
+framesender getframebyseqnum(framesender A[], int length, int Seq_Num){
+	int i = 0;
+	int index = 0;
+	bool found = false;
+	while(i < length){
+		if(A[i].getSeq_Num() == Seq_Num ){
+			found = true;
+			index = i;
+		}
+		i++;
+	}
+	if(found){
+		return A[index];
+	}else{
+		return 0;
+	}
+}
 void sendFrame(framesender fs){
 	char* msg = fs.toBytes();
 	int msgLength = fs.getBytesLength(); 
@@ -86,6 +124,64 @@ void sendFrame(framesender fs){
 	//timeBuffer.push_back(temp);
 	printf("Message ke-%d: %c\n", fs.getSeq_Num(), fs.getData());
 	sendto(Socket,msg,300,0,(struct sockaddr *)&serverAddr,addr_size);	
+}
+void init(){
+	sendtoBuffer();
+	LFS = 0;
+	LAR = 0;
+	int idx_win = 0;
+	mut.lock();
+	for (int i = 0; i < sizeWindow; i++) {
+		sendFrame(Buffer[0]);
+		Window[idx_win] = Buffer[0];
+		idx_win++;
+		Buffer.erase(Buffer.begin());
+	}
+	mut.unlock();
+}
+
+
+void receiveACK(){
+	char * frame;
+	while(1){
+		recvfrom(Socket,frame,10,0,NULL,NULL);
+		framereceiver recvmsg(frame);
+		if(recvmsg.getACK()==ACK){
+			printf("ACK[%d]\n",recvmsg.getSeq_Num());
+			//jika ACK yang diterima untuk frame awal window
+			if(Window[0].getSeq_Num() == recvmsg.getSeq_Num()){
+				//frame dihapus dari window
+				delfirst(Window,sizeWindow);
+				for(int i=0;i<=PendingACK;i++){
+					if(!Buffer.empty()){
+						sendFrame(Buffer[0]);
+						mut.lock();
+						Window[sizeWindow-1]=(Buffer[0]);
+						Buffer.erase(Buffer.begin());
+						mut.unlock();
+					}
+				}
+				PendingACK=0;
+			}else{
+				PendingACK++;
+				mut.lock();
+				delbyseqnum(Window, sizeWindow, recvmsg.getSeq_Num());
+				mut.unlock();
+			}
+
+		}else if(recvmsg.getACK()==NAK){
+			printf("NAK[%d]\n",recvmsg.getSeq_Num());
+			sendFrame(getframebyseqnum(Window,sizeWindow,recvmsg.getSeq_Num()));
+		}
+	}
+}
+void SEND(){
+	thread thread1(receiveACK,Socket);
+	thread thread2(init);
+	//thread thread3(timeout);
+	thread1.join();
+	thread2.join();
+	//thread3.join();
 }
 int main(int argc, char* argv[]) {
 	printf("%d\n",argc);
@@ -103,11 +199,13 @@ int main(int argc, char* argv[]) {
 	    printf("%d %d\n",sizeWindow, sizeBuffer);
 
 	    // Membuat UDP socket
+
+	    // UDP socket
 	    Socket = socket(PF_INET, SOCK_DGRAM, 0);
-	    cout << "Membuat socket untuk koneksi ke " << argv[1] << ":" << port << endl;
+	    cout << "socket untuk koneksi ke " << argv[4] << ":" << port << endl;
 	    configureSetting(argv[4], port);
 	    cout << "1 udah sampe" << endl;
-	    // Inisialisasi ukuran variabel yang akan digunakan
+
 	    addr_size = sizeof serverAddr;  
 	    readFile(filename);
 	    cout << "sampe 2" <<endl;
