@@ -3,7 +3,15 @@
 TUBES JARKOM 1
 
 **Petunjuk penggunaan program.**
+1. Buka terminal.
+2. Masuk ke folder ini.
+3. Ketik "Make" lalu tekan enter.
+4. Ketik "./sendFile <filename> <windowsize> <buffersize> <destination_ip> <destination_port>" lalu tekan enter untuk mengirimkan data pada filename ke destination_ip melalui destination_port.
+5. Ketik "./recvfile <filename> <windowsize> <buffersize> <port>" lalu tekan enter untuk menerima file melalui port lalu menyimpannya pada filename.
+
 **Cara kerja program sliding window.**
+1. 
+
 **Pembagian tugas.**
 
 
