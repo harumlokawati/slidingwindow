@@ -72,8 +72,10 @@ void writeRcvd(int socket, char * filename) {
 	ofstream myfile;
 	
 	while(true) {
+		
 		if(!buffer.empty()) {
-			myfile.open (filename);
+			cout << "hai" <<endl;
+			myfile.open (filename, fstream::app);
 			if (isElement(buffer, i)) {
 				del(buffer, i, fr);
 				if(i > sizeBuffer) i = 1;
@@ -106,6 +108,7 @@ void rcv (int socket) {
 		sendACK(fs.getSeq_Num(), socket);
 		if(!checkTrue[fs.getSeq_Num()]){
 			//send back message data to buffer
+			buffer.push_back(fs);
 			checkTrue[fs.getSeq_Num()] = true;
 			bool check = true;
 			int i = 0;
@@ -139,9 +142,17 @@ int main (int argc, char* argv[]) {
 		
 		configureSetting(port);
 		bind(socketn, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
+		printf("%s",argv[1]);
+		cout << "eh"<< endl;
 		cout << "inisoket" << socketn << endl;
+		
+		ofstream initialize(argv[1]);
+		initialize << "";
+		initialize.close();
+		
 		thread rcvmsg(rcv, std::ref(socketn));
 		thread writemsg(writeRcvd, std::ref(socketn), argv[1]);
+		
 		rcvmsg.join();
 		writemsg.join();
 	}
