@@ -66,13 +66,14 @@ void sendNAK(int seqnum, int socket) {
 	sendto(socket, ackframe.toBytes(), 10, 0,(struct sockaddr *)&serverStorage,addr_size);
 }
 
-void writeRcvd(int socket, string filename) {
+void writeRcvd(int socket, char * filename) {
 	framesender fr;
 	int i = 1;
 	ofstream myfile;
-	myfile.open (filename);
+	
 	while(true) {
 		if(!buffer.empty()) {
+			myfile.open (filename);
 			if (isElement(buffer, i)) {
 				del(buffer, i, fr);
 				if(i > sizeBuffer) i = 1;
@@ -80,9 +81,9 @@ void writeRcvd(int socket, string filename) {
 				printf("%c\n", fr.getData());
 				myfile << fr.getData();
 			}
+			myfile.close();
 		}
 	}
-	myfile.close();
 }
 
 void rcv (int socket) {

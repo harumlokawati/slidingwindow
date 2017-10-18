@@ -40,6 +40,7 @@ typedef struct {
 	int SWS, LAR, LFS = 0;
 	int PendingACK = 0;
 	mutex mut;
+	bool still=true;
 
 void configureSetting(char IP[], int portNum) {
 	  serverAddr.sin_family = AF_INET;
