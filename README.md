@@ -6,13 +6,16 @@ TUBES JARKOM 1
 **Petunjuk penggunaan program.**
 
 	1. Build menggunakan make
-	2. Jalankan 
-	3. Jalankan
+	2. Jalankan sendfile dengan mengetikkan perintah sesuai dengan format berikut:
+	   ./sendfile <filename> <windowsize> <buffersize> <destination_ip> <destination_port>
+	3. Jalankan receivefile dengan mengetikkan perintah sesuai dengan format berikut:
+	   ./recvfile <filename> <windowsize> <buffersize> <port>
+	4. Pastikan filename untuk sendfile dan receivefile berbeda
 
 **Cara kerja program sliding window.**
 
 	1. Data disimpan dalam file txt
-	2. Program akan membaca file tersebut sebagai data, dengan ekivalensi 1 char di file txt = 1 byte data
+	2. Program send file akan membaca file tersebut sebagai data, dengan ekivalensi 1 char di file txt = 1 byte data
 	3. Program kemudian akan mengirim data tersebut sesuai dengan ukuran window dan kemudian dimasukkan ke dalam file buffer
 	4. Program receiver akan menerima data dan kembali menuliskan data tersebut ke file txt yang berbeda.
 
@@ -21,7 +24,7 @@ TUBES JARKOM 1
  	+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	| NIM/Nama                      |      Pembagian Tugas          |
 	+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	| 13515046/Lathifah Nurrahmah   |  receiver file, ack           |
+	| 13515046/Lathifah Nurrahmah   |  receiver file, ACK           |
 	+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	| 13515109/Harum Lokawati       |                               |
 	+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
